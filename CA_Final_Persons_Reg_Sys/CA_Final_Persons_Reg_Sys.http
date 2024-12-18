@@ -1,0 +1,6 @@
+@CA_Final_Persons_Reg_Sys_HostAddress = http://localhost:5072
+
+GET {{CA_Final_Persons_Reg_Sys_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
