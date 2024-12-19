@@ -100,19 +100,12 @@ namespace CA_Final_Persons_Reg_Sys
             app.UseRouting();   //file uploading. Order is important!
 
             app.UseCors();  //use Cors global default policy
+            //app.UseCors("AllowSpecificOrigin"); //Cors added. Specific policy used in controller [EnableCors("PolicyName")]
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            //app.UseCors("AllowSpecificOrigin"); //Cors added. Specific policy used in controller [EnableCors("PolicyName")]
-            
-
-            //app.UseStaticFiles();   
-            
             app.MapControllers();
-
-
-
 
             app.Run();
         }
