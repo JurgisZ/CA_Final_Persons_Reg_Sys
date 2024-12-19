@@ -66,6 +66,18 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             return existingUser;
         }
 
+        public async Task<string?> GetUserPictureUrl(long id)
+        {
+            var existingUser = await _context.Users
+                .Include(pd => pd.UserPersonalData)
+                .FirstOrDefaultAsync (u => u.Id == id);
+
+            if (existingUser == null || existingUser.UserPersonalData.ProfilePicture == null)
+                return null;
+
+            return existingUser.UserPersonalData.ProfilePicture;
+        }
+
         //public async Task<bool> UpdateAsync(long id, UserRequest request)  //id nusirodom is FrontEnd
         //{
         //    var existingUser = await _context.Users
@@ -303,6 +315,28 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
                     return false;
 
                 existingUser.UserPersonalData.ApartmentNumber = apartmentNumber;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateUserPicture(long id, string pictureUrl)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (existingUser == null)
+                    return false;
+
+                existingUser.UserPersonalData.ProfilePicture = pictureUrl;
                 await _context.SaveChangesAsync();
                 return true;
             }

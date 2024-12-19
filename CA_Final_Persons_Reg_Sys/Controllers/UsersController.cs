@@ -4,7 +4,10 @@ using CA_Final_Persons_Reg_Sys.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace CA_Final_Persons_Reg_Sys.Controllers
 {
@@ -13,6 +16,8 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private readonly IUserService
+
         private readonly IUserRepository _userRepository;
         private readonly IUserMapper _userMapper;
         private readonly IUserAuthenticationService _userAuthenticationService;
@@ -28,12 +33,8 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             _pictureRepository = pictureRepository;
         }
 
-        //private readonly IUserPersonalDataMapper _userPersonalDataMapper;
-
-
-
-        //pvz: [Authorize(Roles = "Admin")]
-        [HttpGet("Users")]
+        [Authorize(Roles = "admin")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<UserResult>>> GetAllUsers()
         {   
             var result = await _userRepository.GetAsync();
@@ -50,23 +51,10 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
 
             if(await _userAuthenticationService.Login(request.UserName, request.Password))
             {
-                var jwtToken = _jwtService.GetJwtToken(request.UserName, existingUser.Role);
+                var jwtToken = _jwtService.GetJwtToken(existingUser.Id, request.UserName, existingUser.Role);
                 return Ok(new { token = jwtToken });
             }
             return BadRequest(new { message = "Username or password incorrect." });
-        }
-
-        [AllowAnonymous]
-        [Consumes("multipart/form-data")]
-        [HttpPost("PhotoUploadTest")]
-        public async Task<IActionResult> ApiPostTest([FromForm] FileUploadRequest request)
-        { 
-            if (request == null)
-                return BadRequest("No file uploaded.");
-            
-            var picturePath = await _pictureRepository.Create(request);
-
-            return Ok(new { message = "File uploaded successfully", picturePath });
         }
 
         [AllowAnonymous]
@@ -97,10 +85,16 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             var userId = await _userRepository.CreateAsync(newUser);
             return Created(string.Empty, userId);
         }
-
+        [Authorize(Roles = "user,admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<UserResult>> GetUserById(long id)
         {
+            var userIdStr = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            if (!long.TryParse(userIdStr, out var idSub))
+                return BadRequest("Invalid token");
+            if (idSub != id)
+                return Unauthorized();
+
             var existingUser = await _userRepository
                 .GetByIdAsync(id);
 
@@ -109,6 +103,39 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
 
             return Ok(existingUser);
         }
+
+        [Authorize(Roles = "user,admin")]
+        [HttpGet("{id}/Picture")]
+        public async Task<IActionResult> GetPicture([FromRoute] long id)
+        {
+            var uploadPath = "uploads/";    //JSON!!!!
+            string? fileName = await _userRepository.GetUserPictureUrl(id);
+            if (fileName == null)
+                return StatusCode(500, "Unable to retrieve file");
+
+            //try
+            var filePath = Path.Combine(uploadPath, fileName);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("File not found.");
+            }
+
+            var fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
+            string contentType;
+            switch (fileExtension)  //JSON!!!!!
+            {
+                case ".jpg":
+                case ".jpeg":
+                    contentType = "image/jpeg";
+                    break;
+                default:
+                    return BadRequest("Unsupported file type");
+            }
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, contentType);
+        }
+
+        [Authorize(Roles = "user,admin")]
         [HttpPut("{id}/Password")]
         public async Task<IActionResult> UpdateUserPassword([FromRoute] long id, [FromBody] string newPassword)
         {
@@ -125,11 +152,12 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             }
         }
 
-
-        [AllowAnonymous]
+        [Authorize(Roles = "user,admin")] //403 forbidden
         [HttpPut("{id}/Name")]
         public async Task<IActionResult> UpdateUserName([FromRoute] long id, [FromBody] string newName)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var existinUser = await _userRepository.GetByIdAsync(id);
             if(existinUser == null)
                 return NotFound("User not found");
@@ -140,6 +168,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "user,admin")]
         [HttpPut("{id}/LastName")]
         public async Task<IActionResult> UpdateUserLastName([FromRoute] long id, [FromBody] string newLastName)
         {
@@ -152,6 +181,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "user,admin")]
         [HttpPut("{id}/PersonalCode")]
         public async Task<IActionResult> UpdateUserPersonalCode([FromRoute] long id, [FromBody] string newPersonalCode)
         {
@@ -164,6 +194,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "user,admin")]
         [HttpPut("{id}/PhoneNumber")]
         public async Task<IActionResult> UpdateUserPhoneNumber([FromRoute] long id, [FromBody] string newPhoneNumber)
         {
@@ -176,6 +207,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "user,admin")]
         [HttpPut("{id}/Email")]
         public async Task<IActionResult> UpdateUserEmail([FromRoute] long id, [FromBody] string newEmail)
         {
@@ -188,6 +220,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "user,admin")]
         [Consumes("multipart/form-data")]
         [HttpPut("{id}/Picture")]
         public async Task<IActionResult> UpdateUserPicture([FromRoute] long id, [FromForm] FileUploadRequest request)
@@ -195,14 +228,23 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             if (request == null)
                 return BadRequest("No file uploaded.");
 
-            //delete current file after succesful upload
-            var picturePath = await _pictureRepository.Create(request);
+            var oldPictureUrl = await _userRepository.GetUserPictureUrl(id);
+            if (oldPictureUrl == null)
+                return StatusCode(500, "Failed to update picture");
+         
+            var picturePath = await _pictureRepository.Update(request, oldPictureUrl);
+
             if (picturePath == null)
                 return BadRequest("Failed to upload picture");
+
+            if (!await _userRepository.UpdateUserPicture(id, picturePath))
+                return StatusCode(500, "Failed to upload picture");
+
 
             return Ok(new { message = "File uploaded successfully", picturePath });
         }
 
+        [Authorize(Roles = "user,admin")]
         [HttpPut("{id}/CityName")]
         public async Task<IActionResult> UpdateUserCityName([FromRoute] long id, [FromBody] string newCityName)
         {
@@ -215,6 +257,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "user,admin")]
         [HttpPut("{id}/StreetName")]
         public async Task<IActionResult> UpdateUserStreetName([FromRoute] long id, [FromBody] string newStreetName)
         {
@@ -227,6 +270,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "user,admin")]
         [HttpPut("{id}/HouseNumber")]
         public async Task<IActionResult> UpdateUserHouseNumber([FromRoute] long id, [FromBody] string newHouseNumber)
         {
@@ -239,6 +283,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "user,admin")]
         [HttpPut("{id}/ApartmentNumber")]
         public async Task<IActionResult> UpdateUserApartmentNumber([FromRoute] long id, [FromBody] string newApartmentNumber)
         {
@@ -251,8 +296,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             return NoContent();
         }
 
-
-
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(long id)
         {
@@ -260,7 +304,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
 
             if (!success) return NotFound($"User not found {id}");
 
-            return NoContent(); //success
+            return NoContent();
         }
 
         

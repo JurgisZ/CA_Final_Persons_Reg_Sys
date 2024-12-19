@@ -1,4 +1,5 @@
-﻿using CA_Final_Persons_Reg_Sys.Services.Interfaces;
+﻿using CA_Final_Persons_Reg_Sys.Model;
+using CA_Final_Persons_Reg_Sys.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,12 +15,13 @@ namespace CA_Final_Persons_Reg_Sys.Services
             _configuration = configuration;
         }
 
-        public string GetJwtToken(string username, string role)
+        public string GetJwtToken(long id, string username, string role)
         {
             List<Claim> claims = new List<Claim>
             {
+                new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
                 new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, role)
+                new Claim(ClaimTypes.Role, role),
             };
 
             var secretToken = _configuration.GetSection("Jwt:SecretKey").Value;

@@ -2,6 +2,6 @@
 {
     public interface IJwtService
     {
-        string GetJwtToken(string username, string role);
+        string GetJwtToken(long id, string username, string role);
     }
 }

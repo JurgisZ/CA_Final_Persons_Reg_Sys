@@ -38,10 +38,9 @@ namespace CA_Final_Persons_Reg_Sys
 
                 options.AddDefaultPolicy(policy =>       //"AllowSpecificOrigin", policy =>
                 {
-                    policy.WithOrigins(allowedOrigins!)
-                        .AllowAnyOrigin()   //istrinti
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
                 });
             });
 
@@ -94,15 +93,18 @@ namespace CA_Final_Persons_Reg_Sys
             }
 
             app.UseHttpsRedirection();
+            app.UseRouting();   //file uploading. Order is important!
 
-            app.UseAuthentication();    //Used with Jwt
+            app.UseCors();  //use Cors global default policy
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             //app.UseCors("AllowSpecificOrigin"); //Cors added. Specific policy used in controller [EnableCors("PolicyName")]
-            app.UseCors();  //use Cors global default policy
+            
 
             //app.UseStaticFiles();   
-            app.UseRouting();   //file uploading
+            
             app.MapControllers();
 
 
