@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="Styles/userhome.css">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div>
+            <table>
+                <thead>
+                    <tr><td><input type="button" id="logout-button" value="Log out"></td></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <img id="user-picture" alt="User picture">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><h3>Edit user information:</h3></td>
+                    </tr>
+                    <tr>
+                        <td>Username<br><span id="display-username">john_doe</span></td>
+                    <tr>
+                        <td>
+                            Password<br>
+                            <input type="password" id="input-password" class="form-text" disabled>
+                            <br>
+                            Confirm password<br>
+                            <input type="password" id="input-password-re" class="form-text" disabled>
+                            <button class="edit-button" onclick="enableEditingPassword('input-password', 'input-password-re')">Edit</button>
+                            <button class="save-button" onclick="savePassword('input-password', 'input-password-re', 'Password')" disabled>Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><h3>User information:</h3></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Name<br>
+                            <input type="text" id="input-name" class="form-text" placeholder="Name" maxlength="255" disabled>
+                            <button class="edit-button" onclick="enableEditing('input-name')">Edit</button>
+                            <button class="save-button" onclick="saveField('input-name', 'Name')" disabled>Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Last name<br>
+                            <input type="text" id="input-lastname" class="form-text" placeholder="Last name" maxlength="255" disabled>
+                            <button class="edit-button" onclick="enableEditing('input-lastname')">Edit</button>
+                            <button class="save-button" onclick="saveField('input-lastname', 'LastName')" disabled>Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Personal code<br>
+                            <input type="text" id="input-personal-code" class="form-text" placeholder="Personal code" maxlength="20" disabled>
+                            <button class="edit-button" onclick="enableEditing('input-personal-code')">Edit</button>
+                            <button class="save-button" onclick="saveField('input-personal-code', 'PersonalCode')" disabled>Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Phone number<br>
+                            <input type="tel" id="input-phone" class="form-text" placeholder="Phone number" maxlength="15" disabled>
+                            <button class="edit-button" onclick="enableEditing('input-phone')">Edit</button>
+                            <button class="save-button" onclick="saveField('input-phone', 'PhoneNumber')" disabled>Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Email address<br>
+                            <input type="email" id="input-email" class="form-text" placeholder="Email address" maxlength="255" disabled>
+                            <button class="edit-button" onclick="enableEditing('input-email')">Edit</button>
+                            <button class="save-button" onclick="saveField('input-email', 'Email')" disabled>Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Profile picture<br><input type="file" id="input-picture" class="form-file">
+                            <button class="save-button" id="upload-picture-button" onclick="uploadPicture('input-picture', 'Picture')" disabled>Upload</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><h3>Address:</h3></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            City<br>
+                            <input type="text" id="input-city-name" class="form-text" placeholder="City" maxlength="255" disabled>
+                            <button class="edit-button" onclick="enableEditing('input-city-name')">Edit</button>
+                            <button class="save-button" onclick="saveField('input-city-name', 'CityName')" disabled>Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Street<br>
+                            <input type="text" id="input-street-name" class="form-text" placeholder="Street name" maxlength="255" disabled>
+                            <button class="edit-button" onclick="enableEditing('input-street-name')">Edit</button>
+                            <button class="save-button" onclick="saveField('input-street-name', 'StreetName')" disabled>Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            House number<br>
+                            <input type="text" id="input-house-number" class="form-text" placeholder="House number" maxlength="20" disabled>
+                            <button class="edit-button" onclick="enableEditing('input-house-number')">Edit</button>
+                            <button class="save-button" onclick="saveField('input-house-number', 'HouseNumber')" disabled>Save</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Appartment number<br>
+                            <input type="text" id="input-apartment-number" class="form-text" placeholder="Apartment" maxlength="20" disabled>
+                            <button class="edit-button" onclick="enableEditing('input-apartment-number')">Edit</button>
+                            <button class="save-button" onclick="saveField('input-apartment-number', 'ApartmentNumber')" disabled>Save</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script src="/Scripts/config.js" async defer></script>
+        <script src="Scripts/userhome.js" async defer></script>
+    </body>
+</html>
