@@ -4,6 +4,7 @@ using CA_Final_Persons_Reg_Sys.Model;
 using CA_Final_Persons_Reg_Sys.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace CA_Final_Persons_Reg_Sys.Repositories
 {
@@ -65,37 +66,253 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             return existingUser;
         }
 
-        public async Task<bool> UpdateAsync(long id, UserRequest request)  //id nusirodom is FrontEnd
-        {
-            var existingUser = await _context.Users
-                .Include (pd => pd.UserPersonalData)
-                .FirstOrDefaultAsync(u => u.Id == id);
+        //public async Task<bool> UpdateAsync(long id, UserRequest request)  //id nusirodom is FrontEnd
+        //{
+        //    var existingUser = await _context.Users
+        //        .Include (pd => pd.UserPersonalData)
+        //        .FirstOrDefaultAsync(u => u.Id == id);
             
-            if (existingUser == null)
-                return false;
+        //    if (existingUser == null)
+        //        return false;
 
-            //Update user personal data
-            var personalDataRequest = request.userPersonalDataRequest;
+        //    //Update user personal data
+        //    var personalDataRequest = request.userPersonalDataRequest;
 
-            existingUser.UserPersonalData = new UserPersonalData
+        //    existingUser.UserPersonalData = new UserPersonalData
+        //    {
+        //        Name = personalDataRequest.Name,
+        //        LastName = personalDataRequest.LastName,
+        //        PersonalCode = personalDataRequest.PersonalCode,
+        //        PhoneNumber = personalDataRequest.PhoneNumber,
+        //        Email = personalDataRequest.Email,
+        //        ProfilePicture = personalDataRequest.ProfilePicture,
+        //        CityName = personalDataRequest.CityName,
+        //        StreetName = personalDataRequest.StreetName,
+        //        HouseNumber = personalDataRequest.HouseNumber,
+        //        ApartmentNumber = personalDataRequest.ApartmentNumber
+        //    };
+
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
+        public async Task<bool> UpdateUserPassword(long id, byte[] passwordHash, byte[] passwordSalt)
+        {
+            try
             {
-                Name = personalDataRequest.Name,
-                LastName = personalDataRequest.LastName,
-                PersonalCode = personalDataRequest.PersonalCode,
-                PhoneNumber = personalDataRequest.PhoneNumber,
-                Email = personalDataRequest.Email,
-                ProfilePicture = personalDataRequest.ProfilePicture,
-                CityName = personalDataRequest.CityName,
-                StreetName = personalDataRequest.StreetName,
-                HouseNumber = personalDataRequest.HouseNumber,
-                ApartmentNumber = personalDataRequest.ApartmentNumber
-            };
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Id == id);
 
-            await _context.SaveChangesAsync();
-            return true;
+                if (existingUser == null)
+                    return false;
+
+                existingUser.PasswordHash = passwordHash;
+                existingUser.PasswordSalt = passwordSalt;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
+        }
+        public async Task<bool> UpdateUserName(long id, string name)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (existingUser == null)
+                    return false;
+
+                existingUser.UserPersonalData.Name = name;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
         }
 
-       
+        public async Task<bool> UpdateUserLastName(long id, string lastName)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (existingUser == null)
+                    return false;
+
+                existingUser.UserPersonalData.LastName = lastName;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
+        }
+        public async Task<bool> UpdateUserPersonalCode(long id, string personalCode)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (existingUser == null)
+                    return false;
+
+                existingUser.UserPersonalData.PersonalCode = personalCode;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateUserPhoneNumber(long id, string phoneNumber)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (existingUser == null)
+                    return false;
+
+                existingUser.UserPersonalData.PhoneNumber = phoneNumber;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
+        }
+        //UpdateUserEmail
+        public async Task<bool> UpdateUserEmail(long id, string email)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (existingUser == null)
+                    return false;
+
+                existingUser.UserPersonalData.Email = email;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateUserCityName(long id, string city)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (existingUser == null)
+                    return false;
+
+                existingUser.UserPersonalData.CityName = city;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateUserStreetName(long id, string street)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (existingUser == null)
+                    return false;
+
+                existingUser.UserPersonalData.StreetName = street;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateUserHouseNumber(long id, string houseNumber)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (existingUser == null)
+                    return false;
+
+                existingUser.UserPersonalData.HouseNumber = houseNumber;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateUserApartmentNumber(long id, string apartmentNumber)
+        {
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (existingUser == null)
+                    return false;
+
+                existingUser.UserPersonalData.ApartmentNumber = apartmentNumber;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log ex
+                return false;
+            }
+        }
+
 
         public async Task<bool> DeleteAsync(long id)
         {
@@ -108,41 +325,41 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             return true;
         }
 
-        public async Task<bool> UpdatePersonalDataPropertyAsync(long id, string propertyName, object value)
-        {
-            var existingUser = await _context.Users
-                .Include(pd => pd.UserPersonalData)
-                .FirstOrDefaultAsync(u => u.Id == id);
+        //public async Task<bool> UpdatePersonalDataPropertyAsync(long id, string propertyName, object value)
+        //{
+        //    var existingUser = await _context.Users
+        //        .Include(pd => pd.UserPersonalData)
+        //        .FirstOrDefaultAsync(u => u.Id == id);
 
-            if (existingUser == null || existingUser.UserPersonalData == null)
-                return false;
+        //    if (existingUser == null || existingUser.UserPersonalData == null)
+        //        return false;
 
-            var userPersonalData = existingUser.UserPersonalData;
+        //    var userPersonalData = existingUser.UserPersonalData;
 
-            //possible null exception, existingUser.UserPersonalData == null
-            var propInfo = existingUser.UserPersonalData.GetType().GetProperty(propertyName);
+        //    //possible null exception, existingUser.UserPersonalData == null
+        //    var propInfo = existingUser.UserPersonalData.GetType().GetProperty(propertyName);
 
-            //compile-time check, manau netinka cia, nes ateina is controller
-            //var propInfo = typeof(UserPersonalData).GetProperty(propertyName);
+        //    //compile-time check, manau netinka cia, nes ateina is controller
+        //    //var propInfo = typeof(UserPersonalData).GetProperty(propertyName);
 
-            if (propInfo == null)
-                return false;   //bad request
+        //    if (propInfo == null)
+        //        return false;   //bad request
 
 
-            //Value type check? Need validation
-            var propertyType = propInfo.PropertyType;
-            if (value == null || !(propertyType.IsInstanceOfType(value)))
-                return false;
+        //    //Value type check? Need validation
+        //    var propertyType = propInfo.PropertyType;
+        //    if (value == null || !(propertyType.IsInstanceOfType(value)))
+        //        return false;
 
-            propInfo.SetValue(userPersonalData, value);
+        //    propInfo.SetValue(userPersonalData, value);
 
-            _context.Entry(existingUser.UserPersonalData).Property(propertyName).IsModified = true;
-            //try catch external resource, use logger
-            await _context.SaveChangesAsync();
-            return true;
+        //    _context.Entry(existingUser.UserPersonalData).Property(propertyName).IsModified = true;
+        //    //try catch external resource, use logger
+        //    await _context.SaveChangesAsync();
+        //    return true;
 
-            //Delete cascades together with associated User, see FluentApi @Data/UsersDbContext
-        }
+        //    //Delete cascades together with associated User, see FluentApi @Data/UsersDbContext
+        //}
 
     }
 }
