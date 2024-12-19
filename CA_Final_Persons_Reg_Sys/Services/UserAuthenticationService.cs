@@ -30,7 +30,7 @@ namespace CA_Final_Persons_Reg_Sys.Services
 
         public async Task<bool> Login(string username, string password)
         {
-            User? user = await _userRepository.GetByUserName(username);
+            User? user = await _userRepository.GetByUserNameAsync(username);
             if (user == null)
                 return false;
 

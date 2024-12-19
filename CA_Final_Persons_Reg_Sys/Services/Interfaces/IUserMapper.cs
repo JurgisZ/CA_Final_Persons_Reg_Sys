@@ -5,6 +5,7 @@ namespace CA_Final_Persons_Reg_Sys.Services.Interfaces
 {
     public interface IUserMapper
     {
+        UserLoginResult MapLoginResult(User user);
         IEnumerable<UserRequest> MapRequest(IEnumerable<User> users);
         UserRequest MapRequest(User user);
         IEnumerable<UserResult> MapResult(IEnumerable<User> users);

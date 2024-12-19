@@ -19,7 +19,9 @@ namespace CA_Final_Persons_Reg_Sys.Services
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
+                //new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
+                new System.Security.Claims.Claim("userId", id.ToString()),
+                new System.Security.Claims.Claim("userName", username),
                 new Claim(ClaimTypes.Name, username),
                 new Claim(ClaimTypes.Role, role),
             };

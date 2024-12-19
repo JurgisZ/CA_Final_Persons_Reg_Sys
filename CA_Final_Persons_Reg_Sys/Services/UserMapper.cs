@@ -43,9 +43,20 @@ namespace CA_Final_Persons_Reg_Sys.Services
             return users.Select(MapRequest);
         }
 
+        public UserLoginResult MapLoginResult(User user)
+        {
+            return new UserLoginResult
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Role = user.Role
+            };
+        }
+
+
         public User MapToEntity(UserCreateRequest request, byte[] passwordHash, byte[] passwordSalt)
         {
-            return  new User
+            return new User
             {
                 UserName = request.UserName,
                 PasswordHash = passwordHash,

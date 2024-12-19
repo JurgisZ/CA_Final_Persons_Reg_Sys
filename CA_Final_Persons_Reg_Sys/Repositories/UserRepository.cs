@@ -18,18 +18,6 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
 
         public async Task<long> CreateAsync(User user)
         {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
-
-            var existingUser = await _context.Users.AnyAsync(u => u.UserName == user.UserName);
-            if (existingUser)
-                throw new ArgumentException("User with such name already exists");
-
-            if (user.UserPersonalData == null)
-                throw new ArgumentException("User does not contain personal information");
-
-            var personalDataRequest = user.UserPersonalData;
-
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user.Id;
@@ -40,73 +28,56 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
                 .Include(pd => pd.UserPersonalData)
                 .ToListAsync();
         }
-        //// Using pagination
-        //public async Task<IEnumerable<User>> GetAllAsync(int page = 1, int pageSize = 10)
-        //{
-        //    return await _context.Users
-        //        .Include(pd => pd.UserPersonalData)
-        //        .Skip((page - 1) * pageSize)
-        //        .Take(pageSize)
-        //        .ToListAsync();
-        //}
 
         public async Task<User?> GetByIdAsync(long id)
         {
-            return await _context.Users
-                .Include(pd => pd.UserPersonalData)
-                .FirstOrDefaultAsync(u => u.Id == id);
+            try
+            {
+                return await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
-        public async Task<User?> GetByUserName(string userName)
+        public async Task<User?> GetByUserNameAsync(string userName)
         {
-            var existingUser = await _context.Users
-                .Include (pd => pd.UserPersonalData)
+            try 
+            {
+                var existingUser = await _context.Users
+                .Include(pd => pd.UserPersonalData)
                 .FirstOrDefaultAsync(u => u.UserName == userName);
-            
-            return existingUser;
+
+                return existingUser;
+            }
+
+            catch (Exception ex)
+            {
+                return null;
+            }
+
         }
 
         public async Task<string?> GetUserPictureUrl(long id)
         {
-            var existingUser = await _context.Users
-                .Include(pd => pd.UserPersonalData)
-                .FirstOrDefaultAsync (u => u.Id == id);
+            try
+            {
+                var existingUser = await _context.Users
+                    .Include(pd => pd.UserPersonalData)
+                    .FirstOrDefaultAsync(u => u.Id == id);
 
-            if (existingUser == null || existingUser.UserPersonalData.ProfilePicture == null)
+                return existingUser.UserPersonalData.ProfilePicture;
+            }
+            catch (Exception ex)
+            {
                 return null;
-
-            return existingUser.UserPersonalData.ProfilePicture;
+            }
+      
         }
 
-        //public async Task<bool> UpdateAsync(long id, UserRequest request)  //id nusirodom is FrontEnd
-        //{
-        //    var existingUser = await _context.Users
-        //        .Include (pd => pd.UserPersonalData)
-        //        .FirstOrDefaultAsync(u => u.Id == id);
-            
-        //    if (existingUser == null)
-        //        return false;
-
-        //    //Update user personal data
-        //    var personalDataRequest = request.userPersonalDataRequest;
-
-        //    existingUser.UserPersonalData = new UserPersonalData
-        //    {
-        //        Name = personalDataRequest.Name,
-        //        LastName = personalDataRequest.LastName,
-        //        PersonalCode = personalDataRequest.PersonalCode,
-        //        PhoneNumber = personalDataRequest.PhoneNumber,
-        //        Email = personalDataRequest.Email,
-        //        ProfilePicture = personalDataRequest.ProfilePicture,
-        //        CityName = personalDataRequest.CityName,
-        //        StreetName = personalDataRequest.StreetName,
-        //        HouseNumber = personalDataRequest.HouseNumber,
-        //        ApartmentNumber = personalDataRequest.ApartmentNumber
-        //    };
-
-        //    await _context.SaveChangesAsync();
-        //    return true;
-        //}
         public async Task<bool> UpdateUserPassword(long id, byte[] passwordHash, byte[] passwordSalt)
         {
             try
@@ -128,7 +99,7 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
                 return false;
             }
         }
-        public async Task<bool> UpdateUserName(long id, string name)
+        public async Task<bool> UpdateUserNameAsync(long id, string name)
         {
             try
             {
@@ -150,7 +121,7 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             }
         }
 
-        public async Task<bool> UpdateUserLastName(long id, string lastName)
+        public async Task<bool> UpdateUserLastNameAsync(long id, string lastName)
         {
             try
             {
@@ -171,7 +142,7 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
                 return false;
             }
         }
-        public async Task<bool> UpdateUserPersonalCode(long id, string personalCode)
+        public async Task<bool> UpdateUserPersonalCodeAsync(long id, string personalCode)
         {
             try
             {
@@ -193,7 +164,7 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             }
         }
 
-        public async Task<bool> UpdateUserPhoneNumber(long id, string phoneNumber)
+        public async Task<bool> UpdateUserPhoneNumberAsync(long id, string phoneNumber)
         {
             try
             {
@@ -214,8 +185,8 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
                 return false;
             }
         }
-        //UpdateUserEmail
-        public async Task<bool> UpdateUserEmail(long id, string email)
+
+        public async Task<bool> UpdateUserEmailAsync(long id, string email)
         {
             try
             {
@@ -237,7 +208,7 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             }
         }
 
-        public async Task<bool> UpdateUserCityName(long id, string city)
+        public async Task<bool> UpdateUserCityNameAsync(long id, string city)
         {
             try
             {
@@ -259,7 +230,7 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             }
         }
 
-        public async Task<bool> UpdateUserStreetName(long id, string street)
+        public async Task<bool> UpdateUserStreetNameAsync(long id, string street)
         {
             try
             {
@@ -281,7 +252,7 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             }
         }
 
-        public async Task<bool> UpdateUserHouseNumber(long id, string houseNumber)
+        public async Task<bool> UpdateUserHouseNumberAsync(long id, string houseNumber)
         {
             try
             {
@@ -303,7 +274,7 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             }
         }
 
-        public async Task<bool> UpdateUserApartmentNumber(long id, string apartmentNumber)
+        public async Task<bool> UpdateUserApartmentNumberAsync(long id, string apartmentNumber)
         {
             try
             {
@@ -325,7 +296,7 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             }
         }
 
-        public async Task<bool> UpdateUserPicture(long id, string pictureUrl)
+        public async Task<bool> UpdateUserPicture(long id, string pictureFileName)
         {
             try
             {
@@ -336,7 +307,7 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
                 if (existingUser == null)
                     return false;
 
-                existingUser.UserPersonalData.ProfilePicture = pictureUrl;
+                existingUser.UserPersonalData.ProfilePicture = pictureFileName;
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -348,52 +319,34 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
         }
 
 
-        public async Task<bool> DeleteAsync(long id)
+        public async void DeleteAsync(long id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if(user == null)
-                return false;
+            try
+            {
+                var user = await _context.Users
+                    .FirstAsync(u => u.Id == id);
+                
+                if(user == null)
+                    return;
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();  //SaveChangesAsync can produce an exception
-            return true;
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            { 
+                
+            }
+        
         }
-
-        //public async Task<bool> UpdatePersonalDataPropertyAsync(long id, string propertyName, object value)
-        //{
-        //    var existingUser = await _context.Users
-        //        .Include(pd => pd.UserPersonalData)
-        //        .FirstOrDefaultAsync(u => u.Id == id);
-
-        //    if (existingUser == null || existingUser.UserPersonalData == null)
-        //        return false;
-
-        //    var userPersonalData = existingUser.UserPersonalData;
-
-        //    //possible null exception, existingUser.UserPersonalData == null
-        //    var propInfo = existingUser.UserPersonalData.GetType().GetProperty(propertyName);
-
-        //    //compile-time check, manau netinka cia, nes ateina is controller
-        //    //var propInfo = typeof(UserPersonalData).GetProperty(propertyName);
-
-        //    if (propInfo == null)
-        //        return false;   //bad request
-
-
-        //    //Value type check? Need validation
-        //    var propertyType = propInfo.PropertyType;
-        //    if (value == null || !(propertyType.IsInstanceOfType(value)))
-        //        return false;
-
-        //    propInfo.SetValue(userPersonalData, value);
-
-        //    _context.Entry(existingUser.UserPersonalData).Property(propertyName).IsModified = true;
-        //    //try catch external resource, use logger
-        //    await _context.SaveChangesAsync();
-        //    return true;
-
-        //    //Delete cascades together with associated User, see FluentApi @Data/UsersDbContext
-        //}
-
     }
 }
+
+//// Using pagination
+//public async Task<IEnumerable<User>> GetAllAsync(int page = 1, int pageSize = 10)
+//{
+//    return await _context.Users
+//        .Include(pd => pd.UserPersonalData)
+//        .Skip((page - 1) * pageSize)
+//        .Take(pageSize)
+//        .ToListAsync();
+//}

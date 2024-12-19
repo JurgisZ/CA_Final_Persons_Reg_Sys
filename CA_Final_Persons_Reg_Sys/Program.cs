@@ -25,11 +25,15 @@ namespace CA_Final_Persons_Reg_Sys
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IUserMapper, UserMapper>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserPersonalDataMapper, UserPersonalDataMapper>();
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPictureRepository, PictureRepository>();
+
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IPictureService, PictureService>();
             builder.Services.AddScoped<IJwtService, JwtService>();
-            builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
+            //builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
 
             //Cors config, see cors middleware below
             builder.Services.AddCors(options =>
