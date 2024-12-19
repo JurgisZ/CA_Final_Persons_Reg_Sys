@@ -13,7 +13,6 @@ using System.Security.Claims;
 
 namespace CA_Final_Persons_Reg_Sys.Controllers
 {
-    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -64,6 +63,8 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             if (request == null)
                 return BadRequest("User request is null");
 
+            //if exists with such user name nera. Kazkas blogai su service/repo get metodai
+
             if (request.userPersonalDataRequest == null)
                 return BadRequest("User personal data is null");
 
@@ -93,7 +94,7 @@ namespace CA_Final_Persons_Reg_Sys.Controllers
             return _userMapper.MapResult(existingUser);
         }
 
-        //[Authorize(Roles = "user,admin")] //neimplementuotas tokenų siuntimas prisijungus prie paskyros, nerodo nuotraukos
+        //[Authorize(Roles = "user,admin")] //neimplementuotas tokenų siuntimas userhome.html/js
         [HttpGet("{id}/Picture")]
         public async Task<IActionResult> GetPicture([FromRoute] long id)
         {

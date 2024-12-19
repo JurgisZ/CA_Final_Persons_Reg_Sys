@@ -22,13 +22,25 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
             await _context.SaveChangesAsync();
             return user.Id;
         }
+        /* Using pagination snippet
+        //
+        //public async Task<IEnumerable<User>> GetAllAsync(int page = 1, int pageSize = 10)
+        //{
+        //    return await _context.Users
+        //        .Include(pd => pd.UserPersonalData)
+        //        .Skip((page - 1) * pageSize)
+        //        .Take(pageSize)
+        //        .ToListAsync();
+        //}
+        */
+
         public async Task<IEnumerable<User>> GetAsync()
         {
             return await _context.Users
                 .Include(pd => pd.UserPersonalData)
                 .ToListAsync();
         }
-
+        
         public async Task<User?> GetByIdAsync(long id)
         {
             try
@@ -341,12 +353,3 @@ namespace CA_Final_Persons_Reg_Sys.Repositories
     }
 }
 
-//// Using pagination
-//public async Task<IEnumerable<User>> GetAllAsync(int page = 1, int pageSize = 10)
-//{
-//    return await _context.Users
-//        .Include(pd => pd.UserPersonalData)
-//        .Skip((page - 1) * pageSize)
-//        .Take(pageSize)
-//        .ToListAsync();
-//}

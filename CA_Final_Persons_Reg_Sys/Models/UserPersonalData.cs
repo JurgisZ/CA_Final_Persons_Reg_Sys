@@ -46,13 +46,5 @@ namespace CA_Final_Persons_Reg_Sys.Model
         [Required]
         [MaxLength(20)]
         public required string ApartmentNumber { get; set; }
-
-
-        //[Required]
-        //public int UserPersonalDataId { get; set; }
-
-        //[Required]
-        //public User User { get; set; }
-
     }
 }

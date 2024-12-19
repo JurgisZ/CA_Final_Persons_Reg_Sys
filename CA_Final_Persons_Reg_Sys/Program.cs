@@ -33,7 +33,6 @@ namespace CA_Final_Persons_Reg_Sys
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IPictureService, PictureService>();
             builder.Services.AddScoped<IJwtService, JwtService>();
-            //builder.Services.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
 
             //Cors config, see cors middleware below
             builder.Services.AddCors(options =>
@@ -77,7 +76,7 @@ namespace CA_Final_Persons_Reg_Sys
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Person Reg System API", Version = "v1" });
-                // This tells Swagger that IFormFile should be handled as a file (binary data)
+                //IFormFile as file (binary data)
                 c.MapType<IFormFile>(() => new OpenApiSchema
                 {
                     Type = "string",
@@ -97,10 +96,10 @@ namespace CA_Final_Persons_Reg_Sys
             }
 
             app.UseHttpsRedirection();
-            app.UseRouting();   //file uploading. Order is important!
+            app.UseRouting();   //Order is important!
 
-            app.UseCors();  //use Cors global default policy
-            //app.UseCors("AllowSpecificOrigin"); //Cors added. Specific policy used in controller [EnableCors("PolicyName")]
+            app.UseCors();                          //use Cors global default policy
+            //app.UseCors("AllowSpecificOrigin");   //Cors added. Specific policy used in controller [EnableCors("PolicyName")]
 
             app.UseAuthentication();
             app.UseAuthorization();
